@@ -11,7 +11,7 @@ namespace test
     {
         static void Main(string[] args)
         {
-            TestCreate();
+            //TestCreate();
             TestCursor();
         }
 
@@ -48,26 +48,14 @@ namespace test
         static void TestCursor()
         {
             UnQLite unqlite = new UnQLite("test.udb", UnQLiteOpenModel.ReadWrite);
-
-            unqlite.Save("key5", "value5");
-            string value = unqlite.Get("key1");
-
-            var cursor = unqlite.InitCursor();
-            cursor.LastEntry();
-            while(cursor.ValidEntry())
-            {
-                var keyLen = cursor.GetKeyLength();
-                var key = cursor.GetKey();
-
-                var dataLen = cursor.GetDataLength();
-                var data = cursor.GetData();
-
-                Console.WriteLine($"{key}: {data}");
-
-                var state = cursor.PrevEntry();
-                Console.WriteLine(state);
-            }
             
+            var cursor = unqlite.InitCursor();
+            //var data = cursor.GetAll();
+            var data = cursor.GetAll(CursorWalkDirection.FirstToLast);
+            foreach (var item in data)
+            {
+                Console.WriteLine($"{item.Item1}: {item.Item2}");
+            }            
             cursor.Dispose();
             unqlite.Close();
         }

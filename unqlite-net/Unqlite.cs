@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -1256,6 +1257,21 @@ namespace UnQLiteNet {
     }
 
     /// <summary>
+    /// 游标的方向
+    /// </summary>
+    public enum CursorWalkDirection
+    {
+        /// <summary>
+        /// 从历史插入到最近插入
+        /// </summary>
+        FirstToLast = 0,
+        /// <summary>
+        /// 从最近插入到历史插入
+        /// </summary>
+        LastToFirst = 1
+    }
+
+    /// <summary>
     /// Cursor
     /// Lastest Entry is the first one
     /// </summary>
@@ -1413,6 +1429,38 @@ namespace UnQLiteNet {
                 UnQLite.UnsafeNativeMethods.unqlite_kv_cursor_data(pCursor, ptr, out length);
             }
             return System.Text.Encoding.Default.GetString(result);
+        }
+
+        /// <summary>
+        /// 获取所有的数据
+        /// </summary>
+        /// <returns></returns>
+        public List<Tuple<string, string>> GetAll(CursorWalkDirection direction = CursorWalkDirection.LastToFirst)
+        {
+            List<Tuple<string, string>> result = new List<Tuple<string, string>>();
+            if(direction == CursorWalkDirection.LastToFirst)
+            {
+                LastEntry();
+            }
+            else
+            {
+                FirstEntry();
+            }            
+            while (ValidEntry())
+            {
+                var key = GetKey();                
+                var data = GetData();
+                result.Add(new Tuple<string, string>(key, data));
+                if (direction == CursorWalkDirection.LastToFirst)
+                {
+                    PrevEntry();
+                }
+                else
+                {
+                    NextEntry();
+                }
+            }
+            return result;
         }
 
         /// <summary>
