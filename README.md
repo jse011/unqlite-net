@@ -17,6 +17,10 @@ using(var transaction = unqlite.BeginTransaction()) {
     unqlite.Save("key3", "value3");
 }
 
+//GetAll
+var data = unqlite.GetAll(CursorWalkDirection.FirstToLast);
+var data1 = unqlite.GetAll(CursorWalkDirection.LastToFirst);
+
 unqlite.Close();
 ```
 

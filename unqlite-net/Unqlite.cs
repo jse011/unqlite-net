@@ -722,7 +722,7 @@ namespace UnQLiteNet {
         /// 获取所有的数据
         /// </summary>
         /// <returns></returns>
-        public List<Tuple<string, string>> GetAll(CursorWalkDirection direction = CursorWalkDirection.LastToFirst)
+        public List<Tuple<string, string>> GetAll(CursorWalkDirection direction = CursorWalkDirection.FirstToLast)
         {
             var cursor = InitCursor();
             List<Tuple<string, string>> result = new List<Tuple<string, string>>();

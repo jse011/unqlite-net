@@ -49,8 +49,8 @@ namespace test
         {
             UnQLite unqlite = new UnQLite("test.udb", UnQLiteOpenModel.ReadWrite);
 
-            //var data = unqlite.GetAll();
-            var data = unqlite.GetAll(CursorWalkDirection.FirstToLast);
+            //var data = unqlite.GetAll(CursorWalkDirection.FirstToLast);
+            var data = unqlite.GetAll(CursorWalkDirection.LastToFirst);
             foreach (var item in data)
             {
                 Console.WriteLine($"{item.Item1}: {item.Item2}");
