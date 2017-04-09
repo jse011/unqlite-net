@@ -219,12 +219,14 @@ namespace UnQLiteNet {
             }
 
             int keyCount = Encoding.GetByteCount(key);
-            if(keyCount <= kSmallKeyBufferSize) {
+            if(keyCount <= kSmallKeyBufferSize)
+            {
                 byte* keyBuffer = stackalloc byte[keyCount];
+                GetPtr(key, keyBuffer, keyCount);
                 return InternalTryAppendRaw(keyBuffer, keyCount, data);
             }
             else {
-                byte[] keyBytes = new byte[keyCount];
+                byte[] keyBytes = Encoding.GetBytes(key);
                 fixed (byte* keyBuffer = keyBytes) {
                     return InternalTryAppendRaw(keyBuffer, keyCount, data);
                 }
@@ -256,13 +258,10 @@ namespace UnQLiteNet {
         private unsafe UnQLiteResultCode InternalTryAppend(byte* keyBuffer, int keyCount, string data) {
             UnQLiteResultCode code;
             int dataCount = Encoding.GetByteCount(data);
-            if(dataCount <= kSmallDataBufferSize) {
+            if(dataCount <= kSmallDataBufferSize)
+            {
                 byte* dataBuffer = stackalloc byte[dataCount];
-                if(dataCount > 0) {
-                    fixed (char* dataPtr = data) {
-                        Encoding.GetBytes(dataPtr, data.Length, dataBuffer, dataCount);
-                    }
-                }
+                GetPtr(data, dataBuffer, dataCount);
                 code = UnsafeNativeMethods.unqlite_kv_append(pDb_, keyBuffer, keyCount, dataBuffer, dataCount);
             }
             else {
@@ -293,12 +292,14 @@ namespace UnQLiteNet {
             }
 
             int keyCount = Encoding.GetByteCount(key);
-            if(keyCount <= kSmallKeyBufferSize) {
+            if(keyCount <= kSmallKeyBufferSize)
+            {
                 byte* keyBuffer = stackalloc byte[keyCount];
+                GetPtr(key, keyBuffer, keyCount);
                 return InternalTryAppend(keyBuffer, keyCount, data);
             }
             else {
-                byte[] keyBytes = new byte[keyCount];
+                byte[] keyBytes = Encoding.GetBytes(key);
                 fixed (byte* keyBuffer = keyBytes) {
                     return InternalTryAppend(keyBuffer, keyCount, data);
                 }
@@ -358,12 +359,14 @@ namespace UnQLiteNet {
             }
 
             int keyCount = Encoding.GetByteCount(key);
-            if(keyCount <= kSmallKeyBufferSize) {
+            if(keyCount <= kSmallKeyBufferSize)
+            {
                 byte* keyBuffer = stackalloc byte[keyCount];
+                GetPtr(key, keyBuffer, keyCount);
                 return InteranlTryGetRaw(keyBuffer, keyCount, out data);
             }
             else {
-                byte[] keyBytes = new byte[keyCount];
+                byte[] keyBytes = Encoding.GetBytes(key);
                 fixed (byte* keyBuffer = keyBytes) {
                     return InteranlTryGetRaw(keyBuffer, keyCount, out data);
                 }
@@ -431,12 +434,14 @@ namespace UnQLiteNet {
             }
 
             int keyCount = Encoding.GetByteCount(key);
-            if(keyCount <= kSmallKeyBufferSize) {
+            if(keyCount <= kSmallKeyBufferSize)
+            {
                 byte* keyBuffer = stackalloc byte[keyCount];
+                GetPtr(key, keyBuffer, keyCount);
                 return InternalTryGet(keyBuffer, keyCount, out data);
             }
             else {
-                byte[] keyBytes = new byte[keyCount];
+                byte[] keyBytes = Encoding.GetBytes(key);
                 fixed (byte* keyBuffer = keyBytes) {
                     return InternalTryGet(keyBuffer, keyCount, out data);
                 }
@@ -486,14 +491,34 @@ namespace UnQLiteNet {
             }
 
             int keyCount = Encoding.GetByteCount(key);
-            if(keyCount <= kSmallKeyBufferSize) {
+            if(keyCount <= kSmallKeyBufferSize)
+            {
                 byte* keyBuffer = stackalloc byte[keyCount];
+                GetPtr(key, keyBuffer, keyCount);
                 return InternalTrySaveRaw(keyBuffer, keyCount, data);
             }
             else {
-                byte[] keyBytes = new byte[keyCount];
+                byte[] keyBytes = Encoding.GetBytes(key);
                 fixed (byte* keyBuffer = keyBytes) {
                     return InternalTrySaveRaw(keyBuffer, keyCount, data);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 从栈中分配空间，并返回地址
+        /// </summary>
+        /// <param name="dataBuffer"></param>
+        /// <param name="data"></param>
+        /// <param name="len"></param>
+        /// <returns></returns>
+        public unsafe void GetPtr(string data, byte* dataBuffer, int len)
+        {
+            if (len > 0)
+            {
+                fixed (char* dataPtr = data)
+                {
+                    Encoding.GetBytes(dataPtr, data.Length, dataBuffer, len);
                 }
             }
         }
@@ -523,13 +548,10 @@ namespace UnQLiteNet {
         private unsafe UnQLiteResultCode InternalTrySave(byte* keyBuffer, int keyCount, string data) {
             UnQLiteResultCode code;
             int dataCount = Encoding.GetByteCount(data);
-            if(dataCount <= kSmallDataBufferSize) {
+            if(dataCount <= kSmallDataBufferSize)
+            {
                 byte* dataBuffer = stackalloc byte[dataCount];
-                if(dataCount > 0) {
-                    fixed (char* dataPtr = data) {
-                        Encoding.GetBytes(dataPtr, data.Length, dataBuffer, dataCount);
-                    }
-                }
+                GetPtr(data, dataBuffer, dataCount);
                 code = UnsafeNativeMethods.unqlite_kv_store(pDb_, keyBuffer, keyCount, dataBuffer, dataCount);
             }
             else {
@@ -560,12 +582,14 @@ namespace UnQLiteNet {
             }
 
             int keyCount = Encoding.GetByteCount(key);
-            if(keyCount <= kSmallKeyBufferSize) {
+            if(keyCount <= kSmallKeyBufferSize)
+            {
                 byte* keyBuffer = stackalloc byte[keyCount];
+                GetPtr(key, keyBuffer, keyCount);
                 return InternalTrySave(keyBuffer, keyCount, data);
             }
             else {
-                byte[] keyBytes = new byte[keyCount];
+                byte[] keyBytes = Encoding.GetBytes(key);
                 fixed (byte* keyBuffer = keyBytes) {
                     return InternalTrySave(keyBuffer, keyCount, data);
                 }
@@ -613,12 +637,14 @@ namespace UnQLiteNet {
             }
 
             int keyCount = Encoding.GetByteCount(key);
-            if(keyCount <= kSmallKeyBufferSize) {
+            if(keyCount <= kSmallKeyBufferSize)
+            {
                 byte* keyBuffer = stackalloc byte[keyCount];
+                GetPtr(key, keyBuffer, keyCount);
                 return InternalTryRemove(keyBuffer, keyCount);
             }
             else {
-                byte[] keyBytes = new byte[keyCount];
+                byte[] keyBytes = Encoding.GetBytes(key);
                 fixed (byte* keyBuffer = keyBytes) {
                     return InternalTryRemove(keyBuffer, keyCount);
                 }
@@ -677,6 +703,18 @@ namespace UnQLiteNet {
         /// </summary>
         public UnQLiteTransaction BeginTransaction() {
             return new UnQLiteTransaction(this);
+        }
+
+        /// <summary>
+        /// init a cursor
+        /// </summary>
+        /// <returns></returns>
+        public UnQLiteCursor InitCursor()
+        {
+            IntPtr pCursor = new IntPtr();
+            UnsafeNativeMethods.unqlite_kv_cursor_init(this.DbPtr, out pCursor);
+            UnQLiteCursor cursor = new UnQLiteCursor(this, pCursor);
+            return cursor;
         }
 
         /// <summary>
@@ -788,6 +826,86 @@ namespace UnQLiteNet {
             /// </summary>
             [DllImport(kDllName, CallingConvention = CallingConvention.Cdecl)]
             public static unsafe extern sbyte* unqlite_lib_copyright();
+            #endregion
+
+            #region /* Cursor https://www.unqlite.org/c_api/unqlite_kv_cursor.html*/
+            /// <summary>
+            /// Allocate a new cursor instance
+            /// </summary>
+            [DllImport(kDllName, CallingConvention = CallingConvention.Cdecl)]
+            public static unsafe extern UnQLiteResultCode unqlite_kv_cursor_init(IntPtr pDb, out IntPtr ppCursor);
+            /// <summary>
+            /// release cursor instance
+            /// </summary>
+            [DllImport(kDllName, CallingConvention = CallingConvention.Cdecl)]
+            public static unsafe extern UnQLiteResultCode unqlite_kv_cursor_release(IntPtr pDb, IntPtr pCursor);
+            /// <summary>
+            /// Allocate a new cursor instance
+            /// </summary>
+            [DllImport(kDllName, CallingConvention = CallingConvention.Cdecl)]
+            public static unsafe extern UnQLiteResultCode unqlite_kv_cursor_reset(IntPtr pCursor);
+            /// <summary>
+            /// Allocate a new cursor instance
+            /// </summary>
+            [DllImport(kDllName, CallingConvention = CallingConvention.Cdecl)]
+            public static unsafe extern UnQLiteResultCode unqlite_kv_cursor_seek(IntPtr pCursor, string pKey, int nKeyLen, int iPos);
+            /// <summary>
+            /// Allocate a new cursor instance
+            /// </summary>
+            [DllImport(kDllName, CallingConvention = CallingConvention.Cdecl)]
+            public static unsafe extern UnQLiteResultCode unqlite_kv_cursor_first_entry(IntPtr pCursor);
+            /// <summary>
+            /// Allocate a new cursor instance
+            /// </summary>
+            [DllImport(kDllName, CallingConvention = CallingConvention.Cdecl)]
+            public static unsafe extern UnQLiteResultCode unqlite_kv_cursor_last_entry(IntPtr pCursor);
+            /// <summary>
+            /// Allocate a new cursor instance
+            /// </summary>
+            [DllImport(kDllName, CallingConvention = CallingConvention.Cdecl)]
+            public static unsafe extern int unqlite_kv_cursor_valid_entry(IntPtr pCursor);
+            /// <summary>
+            /// Allocate a new cursor instance
+            /// </summary>
+            [DllImport(kDllName, CallingConvention = CallingConvention.Cdecl)]
+            public static unsafe extern UnQLiteResultCode unqlite_kv_cursor_next_entry(IntPtr pCursor);
+            /// <summary>
+            /// Allocate a new cursor instance
+            /// </summary>
+            [DllImport(kDllName, CallingConvention = CallingConvention.Cdecl)]
+            public static unsafe extern UnQLiteResultCode unqlite_kv_cursor_prev_entry(IntPtr pCursor);
+            /// <summary>
+            /// Allocate a new cursor instance
+            /// </summary>
+            [DllImport(kDllName, CallingConvention = CallingConvention.Cdecl)]
+            public static unsafe extern UnQLiteResultCode unqlite_kv_cursor_key(IntPtr pCursor, IntPtr pBuf, out int pnByte);
+            
+            /// <summary>
+            /// xConsumer
+            /// </summary>
+            [UnmanagedFunctionPointerAttribute(CallingConvention.Cdecl)]
+            public delegate int DataConsumerCallback(IntPtr pData, uint iDataLen, IntPtr pUserData);
+
+            /// <summary>
+            /// Allocate a new cursor instance
+            /// </summary>
+            [DllImport(kDllName, CallingConvention = CallingConvention.Cdecl)]
+            public static unsafe extern UnQLiteResultCode unqlite_kv_cursor_key_callback(IntPtr pCursor, IntPtr xConsumer, IntPtr pUserData);
+            /// <summary>
+            /// Allocate a new cursor instance
+            /// </summary>
+            [DllImport(kDllName, CallingConvention = CallingConvention.Cdecl)]
+            public static unsafe extern UnQLiteResultCode unqlite_kv_cursor_data(IntPtr pCursor, IntPtr pBuf, out long pnData);
+            /// <summary>
+            /// Allocate a new cursor instance
+            /// </summary>
+            [DllImport(kDllName, CallingConvention = CallingConvention.Cdecl)]
+            public static unsafe extern UnQLiteResultCode unqlite_kv_cursor_data_callback(IntPtr pCursor, IntPtr xConsumer, IntPtr pUserData);
+            /// <summary>
+            /// Allocate a new cursor instance
+            /// </summary>
+            [DllImport(kDllName, CallingConvention = CallingConvention.Cdecl)]
+            public static unsafe extern UnQLiteResultCode unqlite_kv_cursor_delete_entry(IntPtr pCursor);
             #endregion
         }
     }
@@ -1107,6 +1225,211 @@ namespace UnQLiteNet {
             if(IsNeedCommit) {
                 Commit();
             }
+        }
+    }
+
+    /// <summary>
+    /// the seek direction
+    /// </summary>
+    public enum CursorPos
+    {
+        /// <summary>
+        /// An exact match is performed. If the record exists, 
+        /// the cursor is left pointing to it. Otherwise it is left pointing to EOF and 
+        /// UNQLITE_NOTFOUND is returned.
+        /// </summary>
+        MATCH_EXACT = 0,
+
+        /// <summary>
+        /// The cursor is left pointing to the largest key in the database 
+        /// that is smaller than (pKey/nKey). 
+        /// If the database contains no keys smaller than (pKey/nKey), the cursor is left at EOF.
+        /// </summary>
+        MATCH_LE = 1,
+
+        /// <summary>
+        /// The cursor is left pointing to the smallest key in the database 
+        /// that is larger than (pKey/nKey). 
+        /// If the database contains no keys larger than (pKey/nKey), the cursor is left at EOF.
+        /// </summary>
+        MATCH_GE = 2
+    }
+
+    /// <summary>
+    /// Cursor
+    /// Lastest Entry is the first one
+    /// </summary>
+    public sealed class UnQLiteCursor : IDisposable
+    {
+        private UnQLite unQLite_;
+        private IntPtr pCursor;
+
+        internal UnQLiteCursor(UnQLite unqlite, IntPtr pCursor)
+        {
+            unQLite_ = unqlite;
+            this.pCursor = pCursor; 
+        }
+
+        /// <summary>
+        /// Point to the first record
+        /// </summary>
+        /// <returns></returns>
+        public UnQLiteResultCode FirstEntry()
+        {
+            return UnQLite.UnsafeNativeMethods.unqlite_kv_cursor_first_entry(pCursor);
+        }
+
+        /// <summary>
+        /// Point to the last record
+        /// </summary>
+        /// <returns></returns>
+        public UnQLiteResultCode LastEntry()
+        {
+            return UnQLite.UnsafeNativeMethods.unqlite_kv_cursor_last_entry(pCursor);
+        }
+
+        /// <summary>
+        /// check if the cursor is pointing to a valid record
+        /// </summary>
+        /// <returns></returns>
+        public bool ValidEntry()
+        {
+            return UnQLite.UnsafeNativeMethods.unqlite_kv_cursor_valid_entry(pCursor) == 1;
+        }
+
+        /// <summary>
+        /// move cursor to the next entry
+        /// </summary>
+        /// <returns></returns>
+        public UnQLiteResultCode NextEntry()
+        {
+            return UnQLite.UnsafeNativeMethods.unqlite_kv_cursor_next_entry(pCursor);
+        }
+
+        /// <summary>
+        /// move cursor to the previous entry
+        /// </summary>
+        /// <returns></returns>
+        public UnQLiteResultCode PrevEntry()
+        {
+            return UnQLite.UnsafeNativeMethods.unqlite_kv_cursor_prev_entry(pCursor);
+        }
+
+        /// <summary>
+        /// seek a record by key
+        /// </summary>
+        /// <param name="pKey"></param>
+        /// <param name="nKeyLen"></param>
+        /// <param name="iPos">the seek direction</param>
+        /// <returns></returns>
+        public UnQLiteResultCode Seek(string pKey, int nKeyLen = -1, CursorPos iPos = CursorPos.MATCH_EXACT)
+        {
+            return UnQLite.UnsafeNativeMethods.unqlite_kv_cursor_seek(pCursor, pKey, nKeyLen, (int)iPos);
+        }
+
+        /// <summary>
+        /// Extract data length
+        /// </summary>
+        /// <returns></returns>
+        public int GetKeyLength()
+        {
+            int pnBytes;
+            UnQLite.UnsafeNativeMethods.unqlite_kv_cursor_key(pCursor, IntPtr.Zero, out pnBytes);
+            return pnBytes;
+        }
+
+        /// <summary>
+        /// Extract data length
+        /// </summary>
+        /// <returns></returns>
+        public long GetDataLength()
+        {
+            long pnBytes;
+            UnQLite.UnsafeNativeMethods.unqlite_kv_cursor_data(pCursor, IntPtr.Zero, out pnBytes);
+            return pnBytes;
+        }
+
+        /// <summary>
+        /// Get Key
+        /// unqlite_kv_cursor_key_callback not working!?
+        /// </summary>
+        public string _GetKey()
+        {
+            byte[] result = null;
+            // 使用callback的模式，就是为了外界不用处理数据回收的问题
+            UnQLite.UnsafeNativeMethods.DataConsumerCallback callback = (IntPtr pData, uint iDataLen, IntPtr pUserData) =>
+            {
+                result = new byte[iDataLen];
+                Marshal.Copy(pData, result, 0, (int)iDataLen);
+                return (int)UnQLiteResultCode.Ok;
+            };
+            UnQLite.UnsafeNativeMethods.unqlite_kv_cursor_key_callback(pCursor, Marshal.GetFunctionPointerForDelegate(callback), IntPtr.Zero);
+            return System.Text.Encoding.Default.GetString(result);
+        }
+
+        /// <summary>
+        /// Get Key
+        /// </summary>
+        /// <returns></returns>
+        public unsafe string GetKey()
+        {
+            int length = this.GetKeyLength();
+            byte[] result = new byte[length];
+            fixed(byte* vp = result)
+            {
+                IntPtr ptr = new IntPtr(vp);
+                UnQLite.UnsafeNativeMethods.unqlite_kv_cursor_key(pCursor, ptr, out length);
+            }
+            return System.Text.Encoding.Default.GetString(result);
+        }
+
+        /// <summary>
+        /// Get Data
+        /// </summary>
+        public string _GetData()
+        {
+            byte[] result = null;
+            UnQLite.UnsafeNativeMethods.DataConsumerCallback callback = (IntPtr pData, uint iDataLen, IntPtr pUserData) =>
+            {
+                result = new byte[iDataLen];
+                Marshal.Copy(pData, result, 0, (int)iDataLen);
+                return (int)UnQLiteResultCode.Ok;
+            };
+            UnQLite.UnsafeNativeMethods.unqlite_kv_cursor_data_callback(pCursor, Marshal.GetFunctionPointerForDelegate(callback), IntPtr.Zero);
+            return System.Text.Encoding.Default.GetString(result);
+        }
+
+        /// <summary>
+        /// Get Key
+        /// </summary>
+        /// <returns></returns>
+        public unsafe string GetData()
+        {
+            long length = this.GetDataLength();
+            byte[] result = new byte[length];
+            fixed (byte* vp = result)
+            {
+                IntPtr ptr = new IntPtr(vp);
+                UnQLite.UnsafeNativeMethods.unqlite_kv_cursor_data(pCursor, ptr, out length);
+            }
+            return System.Text.Encoding.Default.GetString(result);
+        }
+
+        /// <summary>
+        /// delete record
+        /// </summary>
+        /// <returns></returns>
+        public UnQLiteResultCode DeleteEntry()
+        {
+            return UnQLite.UnsafeNativeMethods.unqlite_kv_cursor_delete_entry(pCursor);
+        }
+        
+        /// <summary>
+        /// Disposes the cursor
+        /// </summary>
+        public void Dispose()
+        {
+            UnQLite.UnsafeNativeMethods.unqlite_kv_cursor_release(unQLite_.DbPtr, pCursor);
         }
     }
 }
