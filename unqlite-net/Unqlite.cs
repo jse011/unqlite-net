@@ -719,6 +719,40 @@ namespace UnQLiteNet {
         }
 
         /// <summary>
+        /// 获取所有的数据
+        /// </summary>
+        /// <returns></returns>
+        public List<Tuple<string, string>> GetAll(CursorWalkDirection direction = CursorWalkDirection.LastToFirst)
+        {
+            var cursor = InitCursor();
+            List<Tuple<string, string>> result = new List<Tuple<string, string>>();
+            if (direction == CursorWalkDirection.LastToFirst)
+            {
+                cursor.LastEntry();
+            }
+            else
+            {
+                cursor.FirstEntry();
+            }
+            while (cursor.ValidEntry())
+            {
+                var key = cursor.GetKey();
+                var data = cursor.GetData();
+                result.Add(new Tuple<string, string>(key, data));
+                if (direction == CursorWalkDirection.LastToFirst)
+                {
+                    cursor.PrevEntry();
+                }
+                else
+                {
+                    cursor.NextEntry();
+                }
+            }
+            cursor.Dispose();
+            return result;
+        }
+
+        /// <summary>
         /// Core export Interfaces.Not recommended for direct use.
         /// </summary>
         /// <remarks>
@@ -1429,38 +1463,6 @@ namespace UnQLiteNet {
                 UnQLite.UnsafeNativeMethods.unqlite_kv_cursor_data(pCursor, ptr, out length);
             }
             return System.Text.Encoding.Default.GetString(result);
-        }
-
-        /// <summary>
-        /// 获取所有的数据
-        /// </summary>
-        /// <returns></returns>
-        public List<Tuple<string, string>> GetAll(CursorWalkDirection direction = CursorWalkDirection.LastToFirst)
-        {
-            List<Tuple<string, string>> result = new List<Tuple<string, string>>();
-            if(direction == CursorWalkDirection.LastToFirst)
-            {
-                LastEntry();
-            }
-            else
-            {
-                FirstEntry();
-            }            
-            while (ValidEntry())
-            {
-                var key = GetKey();                
-                var data = GetData();
-                result.Add(new Tuple<string, string>(key, data));
-                if (direction == CursorWalkDirection.LastToFirst)
-                {
-                    PrevEntry();
-                }
-                else
-                {
-                    NextEntry();
-                }
-            }
-            return result;
         }
 
         /// <summary>

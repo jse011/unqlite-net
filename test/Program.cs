@@ -48,15 +48,13 @@ namespace test
         static void TestCursor()
         {
             UnQLite unqlite = new UnQLite("test.udb", UnQLiteOpenModel.ReadWrite);
-            
-            var cursor = unqlite.InitCursor();
-            //var data = cursor.GetAll();
-            var data = cursor.GetAll(CursorWalkDirection.FirstToLast);
+
+            //var data = unqlite.GetAll();
+            var data = unqlite.GetAll(CursorWalkDirection.FirstToLast);
             foreach (var item in data)
             {
                 Console.WriteLine($"{item.Item1}: {item.Item2}");
-            }            
-            cursor.Dispose();
+            }    
             unqlite.Close();
         }
     }
