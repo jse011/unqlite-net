@@ -26,9 +26,9 @@ unqlite.Close();
 
 ## Installation
 ### NuGet
-https://www.nuget.org/packages/unqlite-net/  
+https://www.nuget.org/packages/UnQLiteNet/  
 
-`Install-Package unqlite-net`
+`Install-Package UnQLiteNet`
 
 
 ## *License*

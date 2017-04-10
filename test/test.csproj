@@ -45,9 +45,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\unqlite-net\unqlite-net.csproj">
+    <ProjectReference Include="..\unqlite-net\UnQLiteNet.csproj">
       <Project>{7c587285-6f64-4b4e-82d9-6d31502e15d5}</Project>
-      <Name>unqlite-net</Name>
+      <Name>UnQLiteNet</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

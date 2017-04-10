@@ -1,1 +1,0 @@
-nuget pack unqlite-net.csproj -Prop Configuration=Release

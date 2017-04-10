@@ -11,23 +11,32 @@ namespace test
     {
         static void Main(string[] args)
         {
-            //TestCreate();
-            TestCursor();
+            TestCreate();
+            //TestCursor();
         }
 
         static void TestCreate()
         {
-            UnQLite unqlite = new UnQLite("test.udb", UnQLiteOpenModel.Create);
+            string path = "test.udb";
+            if(System.IO.File.Exists(path))
+            {
+                System.IO.File.Delete(path);
+            }
+            UnQLite unqlite = new UnQLite(path, UnQLiteOpenModel.Create);
 
             unqlite.Save("key", "value");
-            string value = unqlite.Get("key");
-            Contract.Assert(value == "value");
-            unqlite.Remove("key");
+            //string value = unqlite.Get("key");
+            //Contract.Assert(value == "value");
+            //unqlite.Remove("key");
 
             unqlite.Save("key1", "value1");
             unqlite.Save("key2", "value2");
             unqlite.Save("key3", "value3");
-            
+            var data = unqlite.GetAll(CursorWalkDirection.LastToFirst);
+
+            unqlite.TryRemove("key2");
+            var data1 = unqlite.GetAll(CursorWalkDirection.LastToFirst);
+
             unqlite.Close();
         }
 

@@ -1,21 +1,21 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>unqlite-net</id>
+    <id>UnQLiteNet</id>
     <version>$version$</version>
     <title>$title$</title>
-    <authors>YANG Huan</authors>
-    <owners>YANG Huan</owners>
+    <authors>Wenguang Yang, YANG Huan</authors>
+    <owners>Wenguang Yang, YANG Huan</owners>
     <licenseUrl>https://raw.githubusercontent.com/sy-yanghuan/unqlite-net/master/LICENSE</licenseUrl>
-    <projectUrl>https://github.com/sy-yanghuan/unqlite-net</projectUrl>
+    <projectUrl>https://github.com/yagweb/unqlite-net</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <copyright>Copyright 2016</copyright>
-    <tags>UnQlite database</tags>
+    <copyright>Copyright 2017</copyright>
+    <tags>UnQLite database</tags>
   </metadata>
    <files>
     <!-- Include everything in \build -->
-    <file src="build\**" target="build" />
+    <file src="..\Debug\unqlite.dll" target="build" />
 
     <!-- Other files -->
     <!-- ... -->

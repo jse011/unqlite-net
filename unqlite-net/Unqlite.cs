@@ -14,7 +14,7 @@ namespace UnQLiteNet {
     public sealed class UnQLite {
         private const int kSmallKeyBufferSize = 128;
         private const int kSmallDataBufferSize = 512;
-        private static readonly Encoding Encoding = Encoding.UTF8;
+        internal static readonly Encoding Encoding = Encoding.UTF8;
 
         private IntPtr pDb_;
         internal bool isAutoCommit_ = true;
@@ -113,6 +113,7 @@ namespace UnQLiteNet {
                 return UnsafeNativeMethods.unqlite_lib_is_threadsafe() == 1;
             }
         }
+
         /// <summary>
         ///  The current version of the UnQLite engine.
         /// </summary>
@@ -1414,7 +1415,7 @@ namespace UnQLiteNet {
                 return (int)UnQLiteResultCode.Ok;
             };
             UnQLite.UnsafeNativeMethods.unqlite_kv_cursor_key_callback(pCursor, Marshal.GetFunctionPointerForDelegate(callback), IntPtr.Zero);
-            return System.Text.Encoding.Default.GetString(result);
+            return UnQLite.Encoding.GetString(result);
         }
 
         /// <summary>
@@ -1430,7 +1431,7 @@ namespace UnQLiteNet {
                 IntPtr ptr = new IntPtr(vp);
                 UnQLite.UnsafeNativeMethods.unqlite_kv_cursor_key(pCursor, ptr, out length);
             }
-            return System.Text.Encoding.Default.GetString(result);
+            return UnQLite.Encoding.GetString(result);
         }
 
         /// <summary>
@@ -1446,7 +1447,7 @@ namespace UnQLiteNet {
                 return (int)UnQLiteResultCode.Ok;
             };
             UnQLite.UnsafeNativeMethods.unqlite_kv_cursor_data_callback(pCursor, Marshal.GetFunctionPointerForDelegate(callback), IntPtr.Zero);
-            return System.Text.Encoding.Default.GetString(result);
+            return UnQLite.Encoding.GetString(result);
         }
 
         /// <summary>
@@ -1462,7 +1463,7 @@ namespace UnQLiteNet {
                 IntPtr ptr = new IntPtr(vp);
                 UnQLite.UnsafeNativeMethods.unqlite_kv_cursor_data(pCursor, ptr, out length);
             }
-            return System.Text.Encoding.Default.GetString(result);
+            return UnQLite.Encoding.GetString(result);
         }
 
         /// <summary>
