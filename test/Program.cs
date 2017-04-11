@@ -11,8 +11,9 @@ namespace test
     {
         static void Main(string[] args)
         {
-            TestCreate();
+            //TestCreate();
             //TestCursor();
+            TestEntity();
         }
 
         static void TestCreate()
@@ -65,6 +66,56 @@ namespace test
                 Console.WriteLine($"{item.Item1}: {item.Item2}");
             }    
             unqlite.Close();
+        }
+
+        static void TestEntity()
+        {
+            UnQEntitybase db = new UnQEntitybase("enitty", UnQMode.Override);
+            db.AddEntity<T_DataPage>("page");
+            db.AddEntity<T_DataPage2>("page2");
+
+            db.Refresh();
+
+            for (int i=0; i< 5; i++)
+            {
+                var page = new T_DataPage();
+                page.Name = i.ToString();
+                page.Title = "1234";
+                db.Add("page", i.ToString(), page);
+            }
+            
+            for (int i = 0; i < 5; i++)
+            {
+                var page = new T_DataPage2();
+                page.Version = i;
+                page.LevelMaxSize = new UInt16[] { 1, 2, 3};
+                db.Add("page2", i.ToString(), page);
+            }
+
+            var pages = db.GetEntities<T_DataPage>();
+            var page2s = db.GetEntities<T_DataPage2>();
+
+            db.Remove("page", "2");
+            db.Remove("page2", "3");
+
+            var pages1 = db.GetEntities<T_DataPage>();
+            var page2s1 = db.GetEntities<T_DataPage2>();
+
+            db.Refresh();
+
+            var pages2 = db.GetEntities<T_DataPage>();
+            var page2s2 = db.GetEntities<T_DataPage2>();
+        }
+
+        public class T_DataPage
+        {
+            public string Name;
+            public string Title;
+        }
+        public class T_DataPage2
+        {
+            public int Version;
+            public UInt16[] LevelMaxSize;
         }
     }
 }
