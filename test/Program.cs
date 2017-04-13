@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using System.Linq;
-using System.Text;
 using UnQLiteNet;
 
 namespace test
@@ -71,7 +67,7 @@ namespace test
         static void TestEntity()
         {
             UnQEntitybase db = new UnQEntitybase("enitty", UnQMode.Override);
-            db.AddEntity<T_DataPage>("page");
+            db.AddEntity<T_DataPage>("page", "Name");
             db.AddEntity<T_DataPage2>("page2");
 
             db.Refresh();
@@ -81,7 +77,7 @@ namespace test
                 var page = new T_DataPage();
                 page.Name = i.ToString();
                 page.Title = "1234";
-                db.Add("page", i.ToString(), page);
+                db.Add("page", page);
             }
             
             for (int i = 0; i < 5; i++)
@@ -89,31 +85,37 @@ namespace test
                 var page = new T_DataPage2();
                 page.Version = i;
                 page.LevelMaxSize = new UInt16[] { 1, 2, 3};
-                db.Add("page2", i.ToString(), page);
+                db.Add("page2", page);
             }
 
-            var pages = db.GetEntities<T_DataPage>();
-            var page2s = db.GetEntities<T_DataPage2>();
+            var pages = db.GetRecords<T_DataPage>();
+            var page2s = db.GetRecords<T_DataPage2>();
 
-            db.Remove("page", "2");
-            db.Remove("page2", "3");
+            db.Remove("page", 2);
+            db.Remove("page2", 3);
 
-            var pages1 = db.GetEntities<T_DataPage>();
-            var page2s1 = db.GetEntities<T_DataPage2>();
+            var pages1 = db.GetRecords<T_DataPage>();
+            var page2s1 = db.GetRecords<T_DataPage2>();
 
             db.Refresh();
 
-            var pages2 = db.GetEntities<T_DataPage>();
-            var page2s2 = db.GetEntities<T_DataPage2>();
+            var pages2 = db.GetRecords<T_DataPage>();
+            var page2s2 = db.GetRecords<T_DataPage2>();
         }
 
+        [Serializable]
         public class T_DataPage
         {
+            [NonSerialized]
+            public int ID;
             public string Name;
             public string Title;
         }
+        [Serializable]
         public class T_DataPage2
         {
+            [NonSerialized]
+            public int ID;
             public int Version;
             public UInt16[] LevelMaxSize;
         }
