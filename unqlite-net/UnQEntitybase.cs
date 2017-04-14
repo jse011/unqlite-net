@@ -14,6 +14,15 @@ namespace UnQLiteNet
     public class UnQEntitybase : IDisposable
     {
         /// <summary>
+        /// create a database in memory
+        /// </summary>
+        public UnQEntitybase()
+        {
+            unqlite = new UnQLite(inmemory, UnQLiteOpenModel.Create);
+            this.Entities = new Dictionary<string, UnQRecord>();
+        }
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="path"></param>
@@ -42,6 +51,8 @@ namespace UnQLiteNet
             }
             this.Entities = new Dictionary<string, UnQRecord>();
         }
+
+        private const string inmemory = ":mem:";
 
         private UnQLite unqlite;
 
