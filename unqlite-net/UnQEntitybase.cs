@@ -5,6 +5,8 @@ using System.Runtime.Serialization.Json;
 using System.IO;
 using System.Text;
 using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace UnQLiteNet
 {
@@ -57,6 +59,8 @@ namespace UnQLiteNet
         private UnQLite unqlite;
 
         private Dictionary<string, UnQRecord> Entities;
+
+        private BinaryFormatter formatter = new BinaryFormatter();//is not cross platform
 
         /// <summary>
         /// declare an entity
@@ -116,6 +120,121 @@ namespace UnQLiteNet
         }
 
         /// <summary>
+        /// save kv to database
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="data"></param>
+        public void SaveRaw(string key, ArraySegment<byte> data)
+        {
+            unqlite.SaveRaw(key, data);
+        }
+
+        /// <summary>
+        /// save kv to database
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="data"></param>
+        public void SaveRaw(string key, byte[] data)
+        {
+            unqlite.SaveRaw(key, new ArraySegment<byte>(data));
+        }
+
+        /// <summary>
+        /// save kv to database
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="data"></param>
+        public void Save(string key, bool data)
+        {
+            unqlite.SaveRaw(key, new ArraySegment<byte>(BitConverter.GetBytes(data)));
+        }
+
+        /// <summary>
+        /// save kv to database
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="data"></param>
+        public void Save(string key, int data)
+        {
+            unqlite.SaveRaw(key, new ArraySegment<byte>(BitConverter.GetBytes(data)));
+        }
+        
+        /// <summary>
+        /// save kv to database
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="data"></param>
+        public void Save(string key, long data)
+        {
+            unqlite.SaveRaw(key, new ArraySegment<byte>(BitConverter.GetBytes(data)));
+        }
+
+        /// <summary>
+        /// save kv to database
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="data"></param>
+        public void Save(string key, float data)
+        {
+            unqlite.SaveRaw(key, new ArraySegment<byte>(BitConverter.GetBytes(data)));
+        }
+
+        /// <summary>
+        /// save kv to database
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="data"></param>
+        public void Save(string key, double data)
+        {
+            unqlite.SaveRaw(key, new ArraySegment<byte>(BitConverter.GetBytes(data)));
+        }
+
+        /// <summary>
+        /// save kv to database
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="data"></param>
+        public void Save(string key, DateTime data)
+        {
+            unqlite.SaveRaw(key, new ArraySegment<byte>(BitConverter.GetBytes(data.Ticks)));
+        }
+
+        /// <summary>
+        /// save kv to database
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="data"></param>
+        public void SaveStructure(string key, object data)
+        {
+            int size = Marshal.SizeOf(data);
+            byte[] arr = new byte[size];
+            unsafe
+            {
+                fixed (byte* vp = arr)
+                {
+                    Marshal.StructureToPtr(data, new IntPtr(vp), false);
+                }
+            }            
+            unqlite.SaveRaw(key, new ArraySegment<byte>(arr));
+        }
+
+        /// <summary>
+        /// save kv to database
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="data"></param>
+        public void SaveObject(string key, object data)
+        {
+            using (var stream = new MemoryStream())
+            {
+                formatter.Serialize(stream, data);
+                stream.Flush();
+                stream.Position = 0;
+                unqlite.SaveRaw(key, new ArraySegment<byte>(stream.ToArray()));
+            }
+        }
+
+        /// <summary>
         /// get kv from database
         /// </summary>
         /// <param name="key"></param>
@@ -127,11 +246,118 @@ namespace UnQLiteNet
         }
 
         /// <summary>
+        /// get a data of type bool
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public byte[] GetRaw(string key)
+        {
+            var data = unqlite.GetRaw(key);
+            return data;
+        }
+
+        /// <summary>
+        /// get a data of type bool
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public bool GetBoolean(string key)
+        {
+            var data = unqlite.GetRaw(key);
+            return BitConverter.ToBoolean(data, 0);
+        }
+
+        /// <summary>
+        /// get a data of type int32
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public int GetInt32(string key)
+        {
+            var data = unqlite.GetRaw(key);
+            return BitConverter.ToInt32(data, 0);
+        }
+
+        /// <summary>
+        /// get a data of type int64
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public long GetInt64(string key)
+        {
+            var data = unqlite.GetRaw(key);
+            return BitConverter.ToInt64(data, 0);
+        }
+
+        /// <summary>
+        /// get a data of type float
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public float GetSingle(string key)
+        {
+            var data = unqlite.GetRaw(key);
+            return BitConverter.ToSingle(data, 0);
+        }
+
+        /// <summary>
+        /// get a data of type double
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public double GetDouble(string key)
+        {
+            var data = unqlite.GetRaw(key);
+            return BitConverter.ToDouble(data, 0);
+        }
+
+        /// <summary>
+        /// get a data of type datatime
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public DateTime GetDateTime(string key)
+        {
+            var data = unqlite.GetRaw(key);
+            return new DateTime(BitConverter.ToInt64(data, 0));
+        }
+
+        /// <summary>
+        /// get a data of type datatime
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public unsafe T GetStructure<T>(string key)
+        {
+            var data = unqlite.GetRaw(key);
+            fixed(byte* vp = data)
+            {
+                var res = (T)Marshal.PtrToStructure(new IntPtr(vp), typeof(T));
+                return res;
+            }
+        }
+
+        /// <summary>
+        /// get a data of type datatime
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public unsafe T GetObject<T>(string key)
+        {
+            var data = unqlite.GetRaw(key);
+            using (var stream = new MemoryStream(data))
+            {
+                stream.Seek(0, SeekOrigin.Begin);
+                return (T)formatter.Deserialize(stream);
+            }
+        }
+
+        /// <summary>
         /// add a kv
         /// </summary>
         /// <param name="entityName"></param>
         /// <param name="record"></param>
-        public void Add(string entityName, object record)
+        public long Add(string entityName, object record)
         {
             var entity = this.Entities[entityName];
             var data = entity.Serialize(record);
@@ -151,6 +377,7 @@ namespace UnQLiteNet
             }
             //save to cache
             entity.Add(id, uniqueKey, record);
+            return id;
         }
 
         /// <summary>
@@ -189,11 +416,15 @@ namespace UnQLiteNet
             foreach (var item in data)
             {
                 var temp = item.Item1.Split('.');
-                var entity = Entities[temp[0]];
-                var id = Convert.ToInt64(temp[1]);
-                var record = entity.Deserialize(item.Item2);
-                var uniqueKey = entity.GetUniqueKeyValue?.Invoke(record);
-                entity.Add(id, uniqueKey, record);
+                string key = temp[0];
+                if(temp.Length == 2 && Entities.ContainsKey(key))
+                {
+                    var entity = Entities[key];
+                    var id = Convert.ToInt64(temp[1]);
+                    var record = entity.Deserialize(item.Item2);
+                    var uniqueKey = entity.GetUniqueKeyValue?.Invoke(record);
+                    entity.Add(id, uniqueKey, record);
+                }
             }
         }
 
@@ -249,6 +480,11 @@ namespace UnQLiteNet
             SetUniqueKeyValue();
         }
 
+        /*
+         * DataContractJsonSerializer,  System.Runtime.Serialization.Json
+         * JavaScriptSerializer	System.Web.Script.Serialization
+         * JsonConvert 、JArray 、JObject 、JValue 、JProperty	Newtonsoft.Json
+         */
         private DataContractJsonSerializer serializer;
 
         private long CurrentID = 0;
