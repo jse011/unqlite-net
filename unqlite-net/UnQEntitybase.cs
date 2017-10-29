@@ -100,7 +100,6 @@ namespace UnQLiteNet
         /// <summary>
         /// 
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="name"></param>
         /// <returns></returns>
         public List<Tuple<long, object>> GetRecords(string name)
