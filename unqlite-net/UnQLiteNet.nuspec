@@ -14,8 +14,12 @@
     <tags>UnQLite database</tags>
   </metadata>
    <files>
+    <file src="bin\lib\net40\*.*" target="lib/net40" />
     <!-- Include everything in \build -->
-    <file src="..\Debug\unqlite.dll" target="build" />
+    <file src="..\bin\x86\unqlite.dll"
+      target="build\x86" />
+    <file src="..\bin\x64\unqlite.dll" 
+      target="build\x64" />
 
     <!-- Other files -->
     <!-- ... -->
