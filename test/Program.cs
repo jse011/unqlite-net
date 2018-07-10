@@ -108,8 +108,9 @@ namespace test
 
         static void TestEntity()
         {
+            UnQEntitybase db = new UnQEntitybase("enitty", UnQMode.Create);
             //UnQEntitybase db = new UnQEntitybase("enitty", UnQMode.Override);
-            UnQEntitybase db = new UnQEntitybase();
+            //UnQEntitybase db = new UnQEntitybase();
             db.AddEntity<T_Entity1>("page", "Name");
             db.AddEntity<T_Entity2>("page2");
 

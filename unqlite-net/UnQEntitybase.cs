@@ -70,7 +70,7 @@ namespace UnQLiteNet
         /// <param name="uniqueKey"></param>
         public void AddEntity<T>(string entityName, string uniqueKey = null)
         {
-            var entity = new UnQRecord(entityName, typeof(T), uniqueKey);
+            var entity = new UnQRecord(this, entityName, typeof(T), uniqueKey);
             this.Entities.Add(entityName, entity);
         }
 
@@ -289,6 +289,24 @@ namespace UnQLiteNet
         }
 
         /// <summary>
+        /// try get a data of type int64
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public bool TryGetInt64(string key, out long value)
+        {
+            var data = unqlite.GetRaw(key);
+            if(data == null)
+            {
+                value = 0;
+                return false;
+            }
+            value = BitConverter.ToInt64(data, 0);
+            return true;
+        }
+
+        /// <summary>
         /// get a data of type float
         /// </summary>
         /// <param name="key"></param>
@@ -376,6 +394,7 @@ namespace UnQLiteNet
             }
             //save to cache
             entity.Add(id, uniqueKey, record);
+            entity.SaveCurrentID();
             return id;
         }
 
@@ -466,18 +485,30 @@ namespace UnQLiteNet
         /// <summary>
         /// An Entity
         /// </summary>
+        /// <param name="database"></param>
         /// <param name="name"></param>
         /// <param name="t"></param>
         /// <param name="uniqueKey"></param>
-        internal UnQRecord(string name, Type t, string uniqueKey = null)
+        internal UnQRecord(UnQEntitybase database, string name, Type t, string uniqueKey = null)
         {
             Name = name;
             Type = t;
+            Database = database;
             UniqueKey = uniqueKey;
             serializer = new DataContractJsonSerializer(t);
             Objects = new Dictionary<long, Record>();
             SetUniqueKeyValue();
+
+            CurrentIDKey = "$ID$" + name;
+            CurrentID = 0;
+            if (!Database.TryGetInt64(CurrentIDKey, out CurrentID))
+            {
+                CurrentID = 0;
+                SaveCurrentID();
+            }
         }
+
+        private UnQEntitybase Database;
 
         /*
          * DataContractJsonSerializer,  System.Runtime.Serialization.Json
@@ -487,6 +518,8 @@ namespace UnQLiteNet
         private DataContractJsonSerializer serializer;
 
         private long CurrentID = 0;
+
+        private string CurrentIDKey;
 
         /// <summary>
         /// Name
@@ -517,6 +550,11 @@ namespace UnQLiteNet
         {
             CurrentID += 1;
             return CurrentID;
+        }
+
+        internal void SaveCurrentID()
+        {
+            Database.Save(CurrentIDKey, CurrentID);
         }
 
         internal string Serialize(object record)
